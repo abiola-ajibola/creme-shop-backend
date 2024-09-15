@@ -83,4 +83,11 @@ const orderSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const Order = mongoose.model("Order", orderSchema);
+export const OrderModel = mongoose.model("Order", orderSchema);
+class Order_ {
+  getAll() {
+    OrderModel.find();
+  }
+}
+
+export const Order = new Order_();

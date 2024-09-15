@@ -1,4 +1,31 @@
-import mongoose from "mongoose";
+import mongoose, { FilterQuery, QueryOptions } from "mongoose";
+
+type ProductSchema = { createdAt: NativeDate; updatedAt: NativeDate } & {
+  user: mongoose.Types.ObjectId;
+  name: string;
+  image: string;
+  brand: string;
+  category: string;
+  description: string;
+  reviews: mongoose.Types.DocumentArray<
+    { createdAt: NativeDate; updatedAt: NativeDate } & {
+      name: string;
+      rating: number;
+      comment: string;
+    }
+  >;
+  rating: number;
+  numReviews: number;
+  price: number;
+  countInStock: number;
+};
+
+type MongooseFilterQuery = FilterQuery<ProductSchema> | undefined;
+
+type ProductProjection =
+  | mongoose.ProjectionType<ProductSchema>
+  | null
+  | undefined;
 
 const reviewsSchema = new mongoose.Schema(
   {
@@ -70,4 +97,22 @@ export const productSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const Product = mongoose.model("Product", productSchema);
+const ProductModel = mongoose.model("Product", productSchema);
+
+export class Product_ {
+  getOne(filter: MongooseFilterQuery, projection?: ProductProjection) {
+    return ProductModel.findOne(filter, projection);
+  }
+  getById(
+    id: string,
+    projections?: ProductProjection,
+    options?: QueryOptions<ProductSchema> | null | undefined
+  ) {
+    return ProductModel.findById(id, projections, options);
+  }
+  getAll() {
+    return ProductModel.find();
+  }
+}
+
+export const Product = new Product_();
