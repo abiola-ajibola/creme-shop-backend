@@ -2,7 +2,7 @@ import express, { Express, Request, Response, NextFunction } from "express";
 import cors from "cors";
 import { config } from "dotenv";
 import { connectDb } from "./database";
-import { productsRouter } from "./routes";
+import { productsRouter, locationRouter, authRouter } from "./routes";
 
 config();
 const app: Express = express();
@@ -11,12 +11,15 @@ const { NODE_PORT, FRONTEND_URL } = process.env;
 connectDb();
 
 app.use(cors({ origin: FRONTEND_URL }));
+app.use(express.json());
 
 app.get("/test", (req, res) => {
   res.json({ status: "ok" });
 });
 
 app.use("/products", productsRouter);
+app.use("/location", locationRouter);
+app.use("/auth", authRouter);
 
 app.get("/*", (req, res) => {
   res.status(404).json({ message: "Resource not found" });
