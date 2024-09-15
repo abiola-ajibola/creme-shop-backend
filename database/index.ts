@@ -1,10 +1,26 @@
 import { config } from "dotenv";
-import mongoose, { Mongoose } from "mongoose";
+import mongoose, { Mongoose, Schema } from "mongoose";
 
 config();
+declare module "mongoose" {
+  interface Document {
+    asPlainObject: () => Document;
+  }
+}
+
+function asPlainObjectPlugin(schema: Schema) {
+  // schema.virtual("asPlainObject").get(function () {
+  //   return this.this.toObject({ useProjection: false });
+  // });
+  schema.methods.asPlainObject = function () {
+    return this.toObject({ useProjection: true });
+  };
+}
+
+mongoose.plugin(asPlainObjectPlugin);
 
 const { DATABASE_URI, DB_NAME } = process.env;
-console.log({ DATABASE_URI, DB_NAME });
+
 let connection: Mongoose | null;
 export const connectDb = async () => {
   try {
