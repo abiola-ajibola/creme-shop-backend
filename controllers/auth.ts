@@ -7,13 +7,12 @@ import { generateToken } from "../utils/auth";
 import { MEESAGE, STATUS } from "../constants";
 
 export const signUp = asyncHandler(async (req: Request, res: Response) => {
-  console.log({ body: req.body });
   const password = await new Promise((resolve) =>
     bcrypt.hash(req.body.password, 10, (err, hash) => {
       if (err) {
         res
           .status(StatusCodes.INTERNAL_SERVER_ERROR)
-          .json({ message: "An error occured, please try again." });
+          .json({ status: STATUS.ERROR, message: MEESAGE.ERROR });
       }
       resolve(hash);
     })

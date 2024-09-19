@@ -15,6 +15,7 @@ export const userSignupSchema = object({
   address: object({
     street: string().required("Street is required"),
     country: string().required("Country is required"),
+    country_code: string().required("Country code is required"),
     state: string().required("State is required"),
     city: string().required("City is required"),
   }),
