@@ -2,7 +2,12 @@ import express, { Express, Request, Response, NextFunction } from "express";
 import cors from "cors";
 import { config } from "dotenv";
 import { connectDb } from "./database";
-import { productsRouter, locationRouter, authRouter } from "./routes";
+import {
+  productsRouter,
+  locationRouter,
+  authRouter,
+  cartRouter,
+} from "./routes";
 
 config();
 const app: Express = express();
@@ -20,6 +25,7 @@ app.get("/test", (req, res) => {
 app.use("/products", productsRouter);
 app.use("/location", locationRouter);
 app.use("/auth", authRouter);
+app.use("/cart", cartRouter);
 
 app.get("/*", (req, res) => {
   res.status(404).json({ message: "Resource not found" });

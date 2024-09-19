@@ -9,9 +9,6 @@ declare module "mongoose" {
 }
 
 function asPlainObjectPlugin(schema: Schema) {
-  // schema.virtual("asPlainObject").get(function () {
-  //   return this.this.toObject({ useProjection: false });
-  // });
   schema.methods.asPlainObject = function () {
     return this.toObject({ useProjection: true });
   };
