@@ -5,7 +5,7 @@ type CartType = { createdAt: NativeDate; updatedAt: NativeDate } & {
   cartItems: { product: mongoose.Types.ObjectId }[];
 };
 
-const cartSchema = new mongoose.Schema(
+export const cartSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -19,6 +19,10 @@ const cartSchema = new mongoose.Schema(
           ref: "Product",
           required: true,
         },
+        qty: {
+          type: Number,
+          default: 1,
+        },
       },
     ],
   },
@@ -28,7 +32,7 @@ const cartSchema = new mongoose.Schema(
 const CartModel = mongoose.model("Cart", cartSchema);
 class Cart_ {
   getById(cartId: string) {
-    return CartModel.find({ _id: cartId });
+    return CartModel.findOne({ _id: cartId });
   }
   upsert(
     userId: string,
@@ -37,7 +41,7 @@ class Cart_ {
       | mongoose.UpdateQuery<CartType>
       | undefined
   ) {
-    return CartModel.updateOne({ user: userId }, data, { upsert: true });
+    return CartModel.findOneAndUpdate({ user: userId }, data, { upsert: true });
   }
 }
 
