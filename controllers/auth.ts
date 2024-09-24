@@ -3,7 +3,7 @@ import { User } from "../models";
 import { asyncHandler } from "../utils";
 import { StatusCodes } from "http-status-codes";
 import bcrypt from "bcryptjs";
-import { generateToken } from "../utils/auth";
+// import { generateToken } from "../utils/auth";
 import { MEESAGE, STATUS } from "../constants";
 
 export const signUp = asyncHandler(async (req: Request, res: Response) => {
@@ -21,12 +21,12 @@ export const signUp = asyncHandler(async (req: Request, res: Response) => {
   try {
     const user = await User.create({ ...req.body, password });
     if (user) {
-      const token = await generateToken(user.email);
-      console.log({ token });
+      // const token = await generateToken(user.email);
+      // console.log({ token });
       return res.status(StatusCodes.CREATED).json({
         status: STATUS.SUCCESS,
         user: user.asPlainObject(),
-        token,
+        // token,
       });
     }
   } catch (error) {
@@ -46,11 +46,32 @@ export const signIn = asyncHandler(async (req: Request, res: Response) => {
   }
   const passAuth = await bcrypt.compare(req.body.password, user.password);
   if (passAuth) {
-    const token = await generateToken(user.email);
-    res.status(StatusCodes.OK).json({
-      status: STATUS.SUCCESS,
-      token,
-      user: user.asPlainObject(),
+    // const token = await generateToken(user.email);
+    req.session.regenerate(function (err) {
+      if (err) {
+        console.log({ err });
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ status: STATUS.ERROR, message: MEESAGE.ERROR });
+      }
+
+      // store user information in session, typically a user id
+      req.session.user = { email: req.body.email };
+
+      // save the session
+      req.session.save(function (err) {
+        if (err) {
+          console.log({ err });
+          return res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json({ status: STATUS.ERROR, message: MEESAGE.ERROR });
+        }
+        res.status(StatusCodes.OK).json({
+          status: STATUS.SUCCESS,
+          // token,
+          user: user.asPlainObject(),
+        });
+      });
     });
     return;
   }

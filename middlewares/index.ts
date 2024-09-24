@@ -1,2 +1,3 @@
 export { validatePayload } from "./validatePayload";
-export { validateToken } from "./validateToken";
+export { isAuthenticated } from "./isAuthenticated";
+export { session } from "./session";
